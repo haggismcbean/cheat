@@ -43,15 +43,20 @@ function QuadraticBezier(c1, c2, c3){
 		var skewedDegrees = degrees * this.multiplier;
 		return Math.round(skewedDegrees);
 	}
+	this.getLength = function(c1, c2){
+		var length = Math.sqrt(Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2));
+		return length;
+	}
 }
 
 function plotPoints(){
-	for(var point in hand) {
+	for(var point in points) {
 		$("#board").append("<div class='point' id="+point+"></div>");
 		$("#"+point).css({
-			"left": hand[point].x + "px",
-			"top": hand[point].y + "px",
-			"transform": "rotate(" + hand[point].angle +"deg)"
+			"left": points[point].x + "px",
+			"top": points[point].y + "px",
+			"transform": "rotate(" + points[point].angle +"deg)",
+			"background-color": points[point].colour
 		});
 	}
 }
@@ -64,15 +69,43 @@ var curve = new QuadraticBezier(c1, c2, c3);
 
 var hand = {};
 
+var numberPoints = 800;
 var numberCards = 10;
+var length = 0;
 
-for(var i=0; i < numberCards + 1; i++){
-	var percent = i / numberCards;
+for(var i=0; i < numberPoints + 1; i++){
+	var percent = i / numberPoints;
 	var position = curve.getPoint(percent);
 	hand['position' + i] = {};
 	hand['position' + i].x = position.x;
 	hand['position' + i].y = position.y;
 	hand['position' + i].angle = curve.getAngle(percent);
+	if(i > 0){
+		length += curve.getLength(hand['position' + (i-1)], hand['position' + i]);
+		hand['position' + i].cumLength = length;
+	}
+}
+var segmentLength = length / (numberCards + 1);
+var points = {};
+var num = 0;
+var colourNum = 0;
+length = 0;
+colours = ["red", "blue", "green", "purple", "yellow"];
+for(var i=0; i < numberPoints + 1; i++){
+	if(i > 0){
+		length += curve.getLength(hand['position' + (i-1)], hand['position' + i]);
+		if(length >= segmentLength){
+			points['position' + num] = {};
+			points['position' + num] = hand['position' + i];
+			points['position' + num].colour = colours[colourNum];
+			num++;
+			colourNum++;
+			if(colourNum > colours.length - 1){
+				colourNum = 0;
+			}
+			length = 0;
+		}
+	}
 }
 
 console.log(JSON.stringify(hand, 0, 2));

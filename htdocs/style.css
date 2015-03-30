@@ -9,8 +9,8 @@
 .point{
   display: inline-block;
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 100px;
+  height: 165px;
   border-radius: 5px;
   background-color: black;
 }

@@ -6,7 +6,7 @@
   height: 550px;
 }
 
-.point{
+.card{
   display: inline-block;
   position: absolute;
   width: 100px;

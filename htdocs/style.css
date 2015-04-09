@@ -1,0 +1,16 @@
+#board{
+  display: inline-block;
+  position: relative;
+  border: 1px solid black;
+  width: 900px;
+  height: 550px;
+}
+
+.card{
+  display: inline-block;
+  position: absolute;
+  width: 100px;
+  height: 165px;
+  border-radius: 5px;
+  background-color: black;
+}

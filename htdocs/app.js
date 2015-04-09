@@ -129,7 +129,7 @@ var c3 = new Coords(850, 500);
 var curve = new QuadraticBezier(c1, c2, c3);
 
 //given by api. api gives an array of cards I guess, then we get the length.
-var numberCards = 32; 
+var numberCards = 52; 
 var hand = {};
 
 positionCards();

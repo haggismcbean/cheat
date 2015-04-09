@@ -122,9 +122,9 @@ function renderCards(){
 }
 
 //setting up the view
-var c1 = new Coords(50, 500);
-var c2 = new Coords(450, 200);
-var c3 = new Coords(850, 500);
+var c1 = new Coords(50, 350);
+var c2 = new Coords(450, 50);
+var c3 = new Coords(850, 350);
 
 var curve = new QuadraticBezier(c1, c2, c3);
 

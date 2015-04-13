@@ -32,7 +32,7 @@ function QuadraticBezier (c1, c2, c3) {
 	this.numberPoints;
 
 	function init () {
-		_this.numberPoints = this.c3.x - this.c1.x;
+		_this.numberPoints = (this.c3.x - this.c1.x) * 10;
 		var percent;
 		var point;
 		for (var i=0; i < _this.numberPoints + 1; i++) {
@@ -115,58 +115,10 @@ function positionCards () {
 	}
 }
 
-//TODO REFACTOR
-function positionRightHandCardsOnHover (number) {
-	var cardWidth = 100;
-	var boundaryCard = hand['card' + (number - 7) ];
-	var curvePoint = boundaryCard.curvePoint;
-	var subCurveLength = 0;
-	for (var i=0; i < curvePoint; i++) {
-		if (i > 0) {
-			subCurveLength += curve.getLength(curve.points['point' + (i-1)], curve.points['point' + i]);
-		}
-	}
-	console.log("subCurveLength: " + subCurveLength);
-	var numberRightHandCards = parseInt(number) + 2;
-	console.log("numberRightHandCards: " + numberRightHandCards);
-	var requiredSegmentLength = subCurveLength / ( numberRightHandCards );
-	console.log("requiredSegmentLength: " + requiredSegmentLength);
-	var segmentLength = 0;
-	var card = 0;
-	for (var i=0; i < curvePoint; i++) {
-		if (i > 0) {
-			segmentLength += curve.getLength(curve.points['point' + (i-1)], curve.points['point' + i]);
-			if (segmentLength >= requiredSegmentLength) {
-				hand['card' + card] = curve.points['point' + i];
-				card++;
-				segmentLength = 0;
-			}
-		}
-	}
-}
-
 function renderCards () {
 	for (var card in hand) {
 		var number = card.slice(4);
 		$("#board").append("<div class='card' id="+card+"></div>");
-		$("#"+card).css({
-			"left": hand[card].x + "px",
-			"top": hand[card].y + "px",
-			"transform": "rotate(" + hand[card].angle +"deg)",
-			"background-color": hand[card].colour,
-			'z-index': number
-		});
-	}
-
-	$('.card').each(function(){
-		$(this).hover(hoverIn, hoverOut);
-	});
-}
-
-//TODO REFACTOR
-function rerenderCards () {
-	for (var card in hand) {
-		var number = card.slice(4);
 		$("#"+card).css({
 			"left": hand[card].x + "px",
 			"top": hand[card].y + "px",
@@ -196,51 +148,9 @@ positionCards();
 renderCards();
 
 function hoverIn () {
-	/*
-	 * Positioning the actual card we're hovering :)
-	 */
-	var card = $(this).attr('id');
-	var number = card.slice(4);
-
-	/*
-	 * What about the other cards in the deck?
-	 * Cards with a lower number than current card share a smaller fragment of the curve on the right
-	 *  * they have a curve that starts where the cards right hand edge is - a width away from its x Coord
-	 * Cards with a higher number than current card share a smaller fragment of the curve on the left
-	 *  * they have a curve that ends where the left hand edge is - the x Coord
-	 */
-
-	 //TODO CLEAN UP FUNCTION NAMES
-	 positionRightHandCardsOnHover(number);
-	 rerenderCards();
-
-	//distance it moves out
-	var movement = 21;
-
-	//angle of card
-	var angle = hand[card].angle * -1;
-
-	//convert angle to radians
-	var radians = angle * (Math.PI / 180);
-
-	var x = movement * Math.sin(radians);
-	var y = movement * Math.cos(radians);
-
-	$(this).css({
-		"left": hand[card].x - x + "px",
-		"top": hand[card].y - y + "px",
-		'z-index': '1000'
-	});
-
+	
 }
 
 function hoverOut () {
-	var card = $(this).attr('id');
-	var number = card.slice(4);
-	$(this).css({
-		"left": hand[card].x + "px",
-		"top": hand[card].y + "px",
-		"background-color": hand[card].colour,
-		'z-index': number
-	});
+	
 }

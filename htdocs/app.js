@@ -19,7 +19,7 @@ function Coords (x, y) {
 	this.y = y;
 }
 
-//TODO GIVE OWN FILE :)
+//TODO GIVE OWN FILE :) REFACTOR INIT
 function QuadraticBezier (c1, c2, c3) {
 	var _this = this;
 
@@ -118,17 +118,23 @@ function positionCards () {
 function renderCards () {
 	for (var card in hand) {
 		var number = card.slice(4);
-		$("#board").append("<div class='card' id="+card+"></div>");
-		$("#"+card).css({
+		$("#board").append("<div class='container'><div class='card' id="+card+"></div></div>");
+		$("#"+card).parent().css({
 			"left": hand[card].x + "px",
 			"top": hand[card].y + "px",
 			"transform": "rotate(" + hand[card].angle +"deg)",
+			'z-index': number
+		});
+		$("#"+card).css({
 			"background-color": hand[card].colour,
 			'z-index': number
 		});
 	}
 
-	$('.card').each(function(){
+	$("#board").append("<div class='hovered-card'></div>");
+	$(".hovered-card").hide();
+
+	$('.container').each(function(){
 		$(this).hover(hoverIn, hoverOut);
 	});
 }
@@ -141,16 +147,23 @@ var c3 = new Coords(850, 350);
 var curve = new QuadraticBezier(c1, c2, c3);
 
 //given by api. api gives an array of cards I guess, then we get the length.
-var numberCards = 52; 
+var numberCards = 15; 
 var hand = {};
 
 positionCards();
 renderCards();
 
 function hoverIn () {
-	
+	var card = $(this).find(".card").hide().attr("id");
+	console.log(card);
+	$(".hovered-card").show().css({
+		"left": hand[card].x - 20 + "px",
+		"top": hand[card].y - 100 + "px",
+		"background-color": hand[card].colour
+	});
 }
 
 function hoverOut () {
-	
+	$(this).find(".card").show();
+	$(".hovered-card").hide();
 }

@@ -6,11 +6,29 @@
   height: 550px;
 }
 
-.card{
+.container{
   display: inline-block;
   position: absolute;
   width: 100px;
   height: 165px;
   border-radius: 5px;
+}
+
+.hovered-card{
+  position: absolute;
+  width: 148px;
+  height: 245px;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.card{
+  display: inline-block;
+  width: 98px;
+  height: 163px;
+  border-radius: 5px;
+  border: 1px solid black;
   background-color: black;
 }

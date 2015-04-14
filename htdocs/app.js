@@ -32,7 +32,7 @@ function QuadraticBezier (c1, c2, c3) {
 	this.numberPoints;
 
 	function init () {
-		_this.numberPoints = (this.c3.x - this.c1.x) * 10;
+		_this.numberPoints = (this.c3.x - this.c1.x) * 2;
 		var percent;
 		var point;
 		for (var i=0; i < _this.numberPoints + 1; i++) {
@@ -147,7 +147,7 @@ var c3 = new Coords(850, 350);
 var curve = new QuadraticBezier(c1, c2, c3);
 
 //given by api. api gives an array of cards I guess, then we get the length.
-var numberCards = 15; 
+var numberCards = 7; 
 var hand = {};
 
 positionCards();

@@ -125,17 +125,30 @@ function renderCards () {
 			"transform": "rotate(" + hand[card].angle +"deg)",
 			'z-index': number
 		});
+		$("#"+card).parent().draggable({
+			stop: function(event, ui){
+				$(this).removeClass("dragging");
+			}
+		});
 		$("#"+card).css({
 			"background-color": hand[card].colour,
 			'z-index': number
 		});
+		// $("#"+card).draggable();
 	}
 
 	$("#board").append("<div class='hovered-card'></div>");
 	$(".hovered-card").hide();
 
+	$('.bucket').droppable({
+		drop: function(event, ui) {
+	        ui.draggable.addClass('dropped');
+	    }
+	});
+
 	$('.container').each(function(){
 		$(this).hover(hoverIn, hoverOut);
+		$(this).mousedown(mouseDown);
 	});
 }
 
@@ -147,7 +160,7 @@ var c3 = new Coords(850, 350);
 var curve = new QuadraticBezier(c1, c2, c3);
 
 //given by api. api gives an array of cards I guess, then we get the length.
-var numberCards = 7; 
+var numberCards = 52; 
 var hand = {};
 
 positionCards();
@@ -165,5 +178,12 @@ function hoverIn () {
 
 function hoverOut () {
 	$(this).find(".card").show();
+	$(".hovered-card").hide();
+}
+
+function mouseDown () {
+	$(this).find(".card").show();
+	$(this).addClass("dragging");
+	$(this).unbind('mouseenter mouseleave');
 	$(".hovered-card").hide();
 }

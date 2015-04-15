@@ -1,5 +1,5 @@
 /***************************************************************************************\
-|	Sources: 																																							|
+|	Sources: 																																|
 |	http://www.13thparallel.org/archive/bezier-curves/																		|
 |	http://www.purplemath.com/modules/distform.htm 																				|
 |	http://www.bbc.co.uk/schools/gcsebitesize/maths/geometry/trigonometryrev2.shtml				|
@@ -91,64 +91,95 @@ QuadraticBezier.prototype.getLength = function(c1, c2) {
 	return length;
 };
 
-function positionCards () {
+function calcCardPositions () {
 	var card = 0;
 	var requiredSegmentLength = curve.length / (numberCards + 1);
 	var segmentLength = 0;
-	var colourNum = 0;
-	var colours = ["red", "blue", "green", "purple", "yellow", "pink", "orange"];
 	for (var i=0; i < curve.numberPoints + 1; i++) {
 		if (i > 0) {
 			segmentLength += curve.getLength(curve.points['point' + (i-1)], curve.points['point' + i]);
 			if (segmentLength >= requiredSegmentLength) {
 				hand['card' + card] = curve.points['point' + i];
 				hand['card' + card].curvePoint = i;
-				hand['card' + card].colour = colours[colourNum];
 				card++;
-				colourNum++;
 				segmentLength = 0;
-				if (colourNum > colours.length - 1) {
-					colourNum = 0;
-				}
 			}
 		}
 	}
 }
 
-function renderCards () {
+function addColours () {
+	var colourNum = 0;
+	var colours = ["red", "blue", "green", "purple", "yellow", "pink", "orange"];
+	for (var card in hand) {
+		hand[card].colour = colours[colourNum];
+		colourNum++;
+		if (colourNum > colours.length - 1) {
+			colourNum = 0;
+		}
+	}
+}
+
+function initBoard () {
+	addCards();
+	addHoverCard();
+	makeBucketDroppable();
+}
+
+function addCards () {
 	for (var card in hand) {
 		var number = card.slice(4);
 		$("#board").append("<div class='container'><div class='card' id="+card+"></div></div>");
-		$("#"+card).parent().css({
-			"left": hand[card].x + "px",
-			"top": hand[card].y + "px",
-			"transform": "rotate(" + hand[card].angle +"deg)",
-			'z-index': number
-		});
-		$("#"+card).parent().draggable({
-			stop: function(event, ui){
-				$(this).removeClass("dragging");
-			}
-		});
-		$("#"+card).css({
-			"background-color": hand[card].colour,
-			'z-index': number
-		});
-		// $("#"+card).draggable();
+		styleContainer(card, number);
+		addContainerEventHandlers(card, number);
+		makeContainerDraggable(card, number);
+		styleCard(card, number);
 	}
+}
 
+function styleContainer (card, number) {
+	$("#"+card).parent().css({
+		"left": hand[card].x + "px",
+		"top": hand[card].y + "px",
+		"transform": "rotate(" + hand[card].angle +"deg)",
+		'z-index': number
+	});
+}
+
+function makeContainerDraggable (card, number) {
+	$("#"+card).parent().draggable({
+		start: function(){
+			$(this).addClass("dragging");
+		},
+		stop: function(event, ui){
+			$(this).removeClass("dragging");
+		}
+	});
+}
+
+function addContainerEventHandlers(card, number){
+	$("#"+card).parent().hover(hoverIn, hoverOut);
+	$("#"+card).parent().mousedown(mouseDown);
+}
+
+function styleCard(card, number) {
+	$("#"+card).css({
+		"background-color": hand[card].colour,
+		'z-index': number
+	});
+}
+
+function addHoverCard () { 
 	$("#board").append("<div class='hovered-card'></div>");
 	$(".hovered-card").hide();
+}
 
+function makeBucketDroppable () {
 	$('.bucket').droppable({
 		drop: function(event, ui) {
+			ui.draggable.addClass('dragging');
 	        ui.draggable.addClass('dropped');
 	    }
-	});
-
-	$('.container').each(function(){
-		$(this).hover(hoverIn, hoverOut);
-		$(this).mousedown(mouseDown);
 	});
 }
 
@@ -157,18 +188,25 @@ var c1 = new Coords(50, 350);
 var c2 = new Coords(450, 50);
 var c3 = new Coords(850, 350);
 
+/*things that should be objects:
+ * each card (consisting of container and actual card)
+ * the board
+ * the bucket
+ * the hand
+ */
+ 
 var curve = new QuadraticBezier(c1, c2, c3);
 
 //given by api. api gives an array of cards I guess, then we get the length.
 var numberCards = 52; 
 var hand = {};
 
-positionCards();
-renderCards();
+calcCardPositions();
+addColours();
+initBoard();
 
 function hoverIn () {
 	var card = $(this).find(".card").hide().attr("id");
-	console.log(card);
 	$(".hovered-card").show().css({
 		"left": hand[card].x - 20 + "px",
 		"top": hand[card].y - 100 + "px",
@@ -183,7 +221,6 @@ function hoverOut () {
 
 function mouseDown () {
 	$(this).find(".card").show();
-	$(this).addClass("dragging");
 	$(this).unbind('mouseenter mouseleave');
 	$(".hovered-card").hide();
 }
